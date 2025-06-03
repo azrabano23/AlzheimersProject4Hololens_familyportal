@@ -1,6 +1,6 @@
 
-import type { ReactNode } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useEffect, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 import { useUserStore } from "../data/userstore";
 
 
@@ -11,9 +11,13 @@ const ProtectedRoute = ({children} : {children : ReactNode}) => {
     const navigator = useNavigate()
 
     console.log(user, "PROTECTED")
-    if (user == undefined || groupId == undefined){
-        navigator("/")
-    }
+    
+    useEffect(() => {
+        if (user == undefined || groupId == undefined){
+            navigator("/")
+        }
+    }, [])
+
 
   return (
     <>{children}</>

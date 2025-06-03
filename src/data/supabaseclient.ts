@@ -91,3 +91,22 @@ export async function getMembersById(id: string) {
     }
 
 }
+
+export async function uploadMedia(file: File, folder: string) {
+    const filePath = `${folder}/${Date.now()}_${file.name}`
+
+    const { error } = await supabase.storage
+        .from("media")
+        .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+        })
+
+    if (error) {
+        console.error("Upload error:", error.message)
+        return null
+    }
+
+    const { data: urlData } = supabase.storage.from("media").getPublicUrl(filePath)
+    return urlData.publicUrl
+}

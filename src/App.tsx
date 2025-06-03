@@ -7,7 +7,7 @@ function App() {
   const groupId = useUserStore((state) => state.userData?.user.id)
 
   return (
-    <div className=''>
+    <div className='overflow-x-hidden'>
       {groupId ? <Navbar/> : <div/>}
       
 
