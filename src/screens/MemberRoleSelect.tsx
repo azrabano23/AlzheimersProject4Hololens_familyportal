@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { getMemeberRoleById, insertMemeberById } from "@/data/supabaseclient"
+import { getMembersById, insertMemeberById } from "@/data/supabaseclient"
+import type { FamilyMemeber } from "@/data/types"
 import { useUserStore } from "@/data/userstore"
 
 import { useEffect, useState } from "react"
@@ -9,52 +10,56 @@ import { useNavigate } from "react-router-dom"
 
 
 const MemberRoleSelect = () => {
-    const [roles, setRoles] = useState<string[] | null>()
-
+    const [members, setMembers] = useState<FamilyMemeber[] | null>()
     const userId = useUserStore((state) => state.userData?.user.id)
     const role = useUserStore((state) => state.userData?.stored.activeRole)
+    const roleFunc = useUserStore((state) => state.setActiveRole)
 
     const navigator = useNavigate()
+
     console.log(role, "ROEL")
+
     if(role !== undefined) {
         navigator("/home")
+        return
     }
 
     useEffect(() => {
-        async function getRoles(){
+        async function getMembers(){
             if (!userId) {
                 navigator("/signin")
             } else {
-                const allRoles = await getMemeberRoleById(userId)
-                setRoles(allRoles)
+                const allMemebrs = await getMembersById(userId)
+                setMembers(allMemebrs)
             }
 
         }
-        getRoles()
+        getMembers()
     }, [])
 
     const handleRoleSelect = (role: string) => {
-        console.log("Selected role:", role)
+        console.log("HII")
+        roleFunc(role)
     }
 
     
     return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-6 py-10">
+    <div className="flex flex-col items-center justify-center min-h-screen  text-black px-6 py-10">
       <h1 className="text-3xl md:text-5xl font-semibold mb-10">What Is Your Family Role</h1>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        {roles?.map((role, index) => (
+        {members?.map((role, index) => (
           <button
             key={index}
-            onClick={() => handleRoleSelect(role)}
+            onClick={() => handleRoleSelect(role.role)}
             className="flex flex-col items-center hover:scale-105 transition-transform"
           >
             <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-700 rounded-md flex items-center justify-center text-2xl md:text-3xl font-bold">
-              {role.charAt(0).toUpperCase()}
+              {role.role.charAt(0).toUpperCase()}
             </div>
-            <span className="mt-2 text-sm md:text-base">{role}</span>
+            <span className="mt-2 text-sm md:text-base">{role.role}</span>
           </button>
         ))}
-
+        
         <RolePopup/>
       </div>
     </div>

@@ -9,6 +9,7 @@ import Signup from './screens/Signup';
 import App from './App';
 import ProtectedRoute from './components/ProtectedRoute';
 import MemberRoleSelect from './screens/MemberRoleSelect';
+import Members from './screens/Memebers';
 
 
 const router = createBrowserRouter([
@@ -20,7 +21,8 @@ const router = createBrowserRouter([
       { path: "/signin", element: <Signin /> },
       { path: "/signup", element: <Signup />},
       { path: "/home", element:<ProtectedRoute><Home /></ProtectedRoute>  },
-      { path: "/roleselect", element: <MemberRoleSelect />}
+      { path: "/roleselect", element: <MemberRoleSelect />},
+      { path: "/members", element: <Members/>}
       ]
     }
   ]);

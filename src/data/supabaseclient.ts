@@ -1,5 +1,5 @@
 import { createClient, type Session, type User } from '@supabase/supabase-js'
-import type { StoredUser } from './types'
+import type { FamilyMemeber, StoredUser } from './types'
 
 
 export const supabase = createClient(
@@ -60,21 +60,7 @@ export async function getUserById(id: string): Promise<StoredUser | null> {
 
 }
 
-export async function getMemeberRoleById(id: string) : Promise<string[] | null> {
-    try {
-    const {data, error } = await supabase.from("FamilyRoles").select("*").eq("userId", id)
-    if (error) {
-        console.error("Error fetching family roles by ID:", error.message);
-        return null;
-    }
-    return data
 
-    } catch (e ) {
-        console.error(e)
-        return null
-    }
-    
-}
 
 export async function insertMemeberById(id: string, role: string, name: string) {
     try {
@@ -84,6 +70,21 @@ export async function insertMemeberById(id: string, role: string, name: string) 
             return null; 
         }
         return data
+    } catch (e) {
+        console.error(e)
+        return null
+    }
+
+}
+
+export async function getMembersById(id: string) {
+    try {
+        const {data, error} = await supabase.from("FamilyRoles").select("*").eq("userId", id)
+        if (error) {
+            console.error("Error fetchign family members by group id", error)
+            return null
+        }
+        return data as FamilyMemeber[]
     } catch (e) {
         console.error(e)
         return null

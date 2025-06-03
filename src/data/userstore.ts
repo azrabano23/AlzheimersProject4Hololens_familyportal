@@ -9,11 +9,12 @@ import {create } from "zustand"
 export interface UserStore {
     userData: UserData | undefined;
     setActiveRole: (role: string) => void
+    getActiveRole: () => string | undefined
     signIn: (email: string, password: string) => Promise<boolean >;
     refreshUser: () => Promise<void>;
     signOut: () => Promise<void>;
     init: () => () => void;
-
+    
 }
 
 
@@ -123,6 +124,10 @@ export interface UserStore {
             stored: updatedStored,
             },
         });
+    },
+
+    getActiveRole: () => {
+        return get().userData?.stored.activeRole?.toString()
     },
   
     refreshUser: async () => {

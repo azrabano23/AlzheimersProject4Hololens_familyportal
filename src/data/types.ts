@@ -14,3 +14,12 @@ export type StoredUser = {
     username: string;
     activeRole?: string | null
 }
+
+export type FamilyMemeber = {
+    name : string,
+    userId: string,
+    created_at: string,
+    role: string,
+    id: string,
+    
+}
