@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { GetSignedInUser } from '../data/supabaseclient'
+import { GetSignedInUserAndRole } from '../data/supabaseclient'
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -18,7 +18,7 @@ const Signin = () => {
     const navigator = useNavigate()
     useEffect(() => {
         async function checkUser(){
-            const signedIn = await GetSignedInUser()
+            const signedIn = await GetSignedInUserAndRole()
                 if (signedIn) {
                     navigator("/home")
                 }

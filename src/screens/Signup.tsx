@@ -1,4 +1,4 @@
-import { GetSignedInUser, supabase } from '@/data/supabaseclient'
+import { GetSignedInUserAndRole, supabase } from '@/data/supabaseclient'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -13,7 +13,7 @@ const Signup = () => {
     const navigator = useNavigate()
     useEffect(() => {
         async function checkUser(){
-            const signedIn = await GetSignedInUser()
+            const signedIn = await GetSignedInUserAndRole()
                 if (signedIn) {
                     navigator("/home")
                 }

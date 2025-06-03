@@ -6,18 +6,20 @@ import { useUserStore } from "../data/userstore";
 
 
 const ProtectedRoute = ({children} : {children : ReactNode}) => {
-    const user = useUserStore((state) => state.userData?.user);
-    const groupId = useUserStore((state) => state.userData?.stored.activeRole)
+    const userData = useUserStore((state) => state.userData);
     const navigator = useNavigate()
 
-    console.log(user, "PROTECTED")
-    
-    useEffect(() => {
-        if (user == undefined || groupId == undefined){
-            navigator("/")
-        }
-    }, [])
+    console.log(userData, "PROTECTED")
 
+  useEffect(() => {
+    if (userData === undefined || userData?.stored?.activeRole === undefined) {
+      navigator("/signin");
+    }
+  }, [userData, navigator]);
+
+  if (userData === undefined || userData?.stored?.activeRole === undefined) {
+    return <div className="text-white text-center p-10">Loading...</div>;
+  }
 
   return (
     <>{children}</>

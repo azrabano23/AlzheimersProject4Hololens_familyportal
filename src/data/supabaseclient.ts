@@ -9,15 +9,28 @@ export const supabase = createClient(
 
 
 
-export async function GetSignedInUser() {
-    const { data: { session } } = await supabase.auth.getSession()
+export async function GetSignedInUserAndRole() {
+  const { data: { session } } = await supabase.auth.getSession();
 
-    if (session) {
-        return true
-    }
-    return false
+  if (!session?.user) return null;
+
+  const userId = session.user.id;
+
+  const { data, error } = await supabase
+    .from("users")
+    .select("*")
+    .eq("user_id", userId)
+    .single();
+
+  if (error || !data || !data.activeRole) {
+    return null
+  }
+
+  return {
+    user: session.user,
+    stored: data,
+  };
 }
-
 export async function SignOut() {
     const data = await supabase.auth.signOut()
     return data
