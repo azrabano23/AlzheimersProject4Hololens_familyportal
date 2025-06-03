@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { getMemeberRoleById, insertMemeberById } from "@/data/supabaseclient"
 import { useUserStore } from "@/data/userstore"
-import type { query } from "express"
-import { DownloadIcon } from "lucide-react"
+
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -38,10 +37,7 @@ const MemberRoleSelect = () => {
         console.log("Selected role:", role)
     }
 
-    const handleCreateRole = () => {
-        console.log("Navigate to create role screen or open modal")
-    }
-
+    
     return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-black text-white px-6 py-10">
       <h1 className="text-3xl md:text-5xl font-semibold mb-10">What Is Your Family Role</h1>
