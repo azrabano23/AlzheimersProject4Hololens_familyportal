@@ -76,9 +76,9 @@ export async function getMemeberRoleById(id: string) : Promise<string[] | null> 
     
 }
 
-export async function insertMemeberById(id: string, role: string) {
+export async function insertMemeberById(id: string, role: string, name: string) {
     try {
-        const {data, error } = await supabase.from("FamilyRoles").insert({id, role})
+        const {data, error } = await supabase.from("FamilyRoles").insert({"userId": id, "role": role, "name": name})
         if (error) {
             console.error("Error inserting family roles by ID:", error.message);
             return null; 

@@ -1,5 +1,10 @@
-import { getMemeberRoleById } from "@/data/supabaseclient"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { getMemeberRoleById, insertMemeberById } from "@/data/supabaseclient"
 import { useUserStore } from "@/data/userstore"
+import type { query } from "express"
+import { DownloadIcon } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
@@ -12,7 +17,7 @@ const MemberRoleSelect = () => {
 
     const navigator = useNavigate()
     console.log(role, "ROEL")
-    if(role !== null) {
+    if(role !== undefined) {
         navigator("/home")
     }
 
@@ -54,8 +59,51 @@ const MemberRoleSelect = () => {
           </button>
         ))}
 
+        <RolePopup/>
+      </div>
+    </div>
+  );
+}
+
+
+const RolePopup = () => {
+  const [open, setOpen] = useState(false)
+  const [name, setName] = useState("")
+  const [selectedRole, setSelectedRole] = useState("Mom")
+
+  const userId = useUserStore((s) => s.userData?.user.id)
+  const setActiveRole = useUserStore((s) => s.setActiveRole)
+  const navigator = useNavigate()
+
+  const roles = ["Mom", "Dad", "Brother", "Sister", "Uncle", "Aunt", "Cousin"]
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!userId || !name || !selectedRole) {
+      alert("Please fill in all fields")
+      return
+    }
+
+    const error = await insertMemeberById(userId, selectedRole, name)
+    if(error !== null) {
+        console.log(error)
+        navigator("/")
+    }
+
+    if (error) {
+      console.error("Error saving role:", error)
+      alert("Failed to save role")
+    } else {
+      setActiveRole(selectedRole)
+      navigator("/home")
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger onClick={() => setOpen(true)}>
         <button
-          onClick={handleCreateRole}
           className="flex flex-col items-center hover:scale-105 transition-transform"
         >
           <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-500 rounded-md flex items-center justify-center text-4xl font-bold">
@@ -63,9 +111,50 @@ const MemberRoleSelect = () => {
           </div>
           <span className="mt-2 text-sm md:text-base">Add Profile</span>
         </button>
-      </div>
-    </div>
-  );
+      </DialogTrigger>
+
+      <DialogContent className="max-w-lg p-6 rounded-lg bg-card shadow-lg">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-bold text-foreground">Enter Your Name & Role</DialogTitle>
+        </DialogHeader>
+
+        <form onSubmit={handleFormSubmit} className="mt-4 space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Name</label>
+            <Input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full"
+              placeholder="Your name"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Role</label>
+            <select
+              value={selectedRole}
+              onChange={(e) => setSelectedRole(e.target.value)}
+              className="w-full border border-input rounded-md bg-background px-3 py-2 text-foreground"
+            >
+              {roles.map((role) => (
+                <option key={role} value={role}>
+                  {role}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex justify-end">
+            <Button type="submit" className="py-2 px-4 rounded-md">
+              Save
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
 }
 
 export default MemberRoleSelect
