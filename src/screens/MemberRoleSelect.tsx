@@ -13,16 +13,16 @@ const MemberRoleSelect = () => {
     const [members, setMembers] = useState<FamilyMemeber[] | null>()
     const userId = useUserStore((state) => state.userData?.user.id)
     const role = useUserStore((state) => state.userData?.stored.activeRole)
-    const roleFunc = useUserStore((state) => state.setActiveRole)
-
+    const roleFunc = useUserStore((state) => state.setActiveRoleAndName)
     const navigator = useNavigate()
 
     console.log(role, "ROEL")
 
-    if(role !== undefined) {
-        navigator("/home")
-        return
+    useEffect(() => {
+    if (role !== undefined && name !== undefined) {
+        navigator("/home");
     }
+    }, [role, name, navigator]);
 
     useEffect(() => {
         async function getMembers(){
@@ -37,9 +37,9 @@ const MemberRoleSelect = () => {
         getMembers()
     }, [])
 
-    const handleRoleSelect = (role: string) => {
+    const handleRoleSelect = (role: string, name:string) => {
         console.log("HII")
-        roleFunc(role)
+        roleFunc(role, name)
     }
 
     
@@ -50,7 +50,7 @@ const MemberRoleSelect = () => {
         {members?.map((mem, index) => (
           <button
             key={index}
-            onClick={() => handleRoleSelect(mem.role)}
+            onClick={() => handleRoleSelect(mem.role, mem.name)}
             className="flex flex-col items-center hover:scale-105 transition-transform"
           >
             <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-700 rounded-md flex items-center justify-center text-2xl md:text-3xl font-bold">
@@ -76,7 +76,7 @@ const RolePopup = () => {
   const [selectedRole, setSelectedRole] = useState("Mom")
 
   const userId = useUserStore((s) => s.userData?.user.id)
-  const setActiveRole = useUserStore((s) => s.setActiveRole)
+  const setActiveRole = useUserStore((s) => s.setActiveRoleAndName)
   const navigator = useNavigate()
 
   const roles = ["Mom", "Dad", "Brother", "Sister", "Uncle", "Aunt", "Cousin"]
@@ -99,23 +99,25 @@ const RolePopup = () => {
       console.error("Error saving role:", error)
       alert("Failed to save role")
     } else {
-      setActiveRole(selectedRole)
+      setActiveRole(selectedRole, name)
       navigator("/home")
     }
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger onClick={() => setOpen(true)}>
-        <button
-          className="flex flex-col items-center hover:scale-105 transition-transform"
-        >
-          <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-500 rounded-md flex items-center justify-center text-4xl font-bold">
-            +
-          </div>
-          <span className="mt-2 text-sm md:text-base">Add Profile</span>
-        </button>
-      </DialogTrigger>
+<DialogTrigger asChild>
+  <button
+    onClick={() => setOpen(true)}
+    className="flex flex-col items-center hover:scale-105 transition-transform"
+  >
+    <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-500 rounded-md flex items-center justify-center text-4xl font-bold">
+      +
+    </div>
+    <span className="mt-2 text-sm md:text-base">Add Profile</span>
+  </button>
+</DialogTrigger>
+
 
       <DialogContent className="max-w-lg p-6 rounded-lg bg-card shadow-lg">
         <DialogHeader>

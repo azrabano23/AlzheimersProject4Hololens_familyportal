@@ -8,13 +8,13 @@ import {create } from "zustand"
 
 export interface UserStore {
     userData: UserData | undefined;
-    setActiveRole: (role: string) => void
-    getActiveRole: () => string | undefined
+    setActiveRoleAndName: (role: string, name: string) => void
+    getActiveRoleAndName: () => (string | undefined)[]
     signIn: (email: string, password: string) => Promise<boolean >;
     refreshUser: () => Promise<void>;
     signOut: () => Promise<void>;
     init: () => () => void;
-    
+
 }
 
 
@@ -92,9 +92,9 @@ export interface UserStore {
     },
     signIn: async (email: string, password: string) => {
       const result = await signInWithEmailAndPassword(email, password);
-      
+      const name = get().userData?.stored.name ?? null
       if(result) {
-        const stored = await getUserById(result.user.id)
+        const stored = await getUserById(result.user.id, name)
         if (!stored) {
           console.warn("User ID not found in database");
           return false;
@@ -111,11 +111,11 @@ export interface UserStore {
       return false
     },
 
-    setActiveRole: (role: string) => {
+    setActiveRoleAndName: (role: string, name: string) => {
         const current = get().userData;
         if (!current) return;
 
-        const updatedStored = { ...current.stored, activeRole: role };
+        const updatedStored = { ...current.stored, activeRole: role, name: name};
         localStorage.setItem("stored", JSON.stringify(updatedStored));
 
         set({
@@ -126,12 +126,14 @@ export interface UserStore {
         });
     },
 
-    getActiveRole: () => {
-        return get().userData?.stored.activeRole?.toString()
+    getActiveRoleAndName: () => {
+        const ret = [get().userData?.stored.activeRole?.toString(), get().userData?.stored.name?.toString()]
+        return ret
     },
   
     refreshUser: async () => {
       const { data, error } = await supabase.auth.getUser();
+      const name = get().userData?.stored.name ?? null
       if (error) {
         console.error("Error fetching user:", error.message);
         return;
@@ -141,7 +143,7 @@ export interface UserStore {
         console.warn("No user ID found");
         return;
       }
-      const stored = await getUserById(id);
+      const stored = await getUserById(id, name);
       if (!stored) {
         console.warn("User ID not found in database");
         return;
@@ -186,7 +188,8 @@ export interface UserStore {
         profile_image: "",
         user_id: user.data.user.id, 
         username: user.data.user.email?.split("@")[0] || "unknown",
-        activeRole: null
+        activeRole: null,
+        name: null
       },
     });
   }

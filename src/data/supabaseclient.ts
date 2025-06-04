@@ -1,5 +1,5 @@
 import { createClient, type Session, type User } from '@supabase/supabase-js'
-import type { FamilyMemeber, StoredUser } from './types'
+import type { FamilyMemeber, GroupMediaItem, StoredUser } from './types'
 
 
 export const supabase = createClient(
@@ -52,7 +52,7 @@ export async function signInWithEmailAndPassword(email: string, password: string
 }
 
 
-export async function getUserById(id: string): Promise<StoredUser | null> {
+export async function getUserById(id: string, name: string | null): Promise<StoredUser | null> {
     const { data, error } = await supabase.from("users").select("*").eq("user_id", id)
     if (error) {
         console.error("Error fetching user by ID:", error.message);
@@ -69,6 +69,7 @@ export async function getUserById(id: string): Promise<StoredUser | null> {
         user_id: data[0].user_id,
         email: data[0].email,
         username: data[0].username,
+        name: name
     } satisfies StoredUser
 
 }
@@ -123,3 +124,42 @@ export async function uploadMedia(file: File, folder: string) {
     const { data: urlData } = supabase.storage.from("media").getPublicUrl(filePath)
     return urlData.publicUrl
 }
+
+export async function getAllGroupMediaWithNames(groupId: string): Promise<GroupMediaItem[]> {
+  const result: GroupMediaItem[] = []
+
+  const { data: folders, error: folderErr } = await supabase
+    .storage
+    .from("media")
+    .list(`user-uploads/${groupId}`)
+
+  if (folderErr || !folders) {
+    console.error("Error listing group folders:", folderErr)
+    return []
+  }
+
+  for (const folder of folders) {
+    const personName = folder.name
+    if (!personName) continue
+
+    const path = `user-uploads/${groupId}/${personName}`
+    const { data: files, error: fileErr } = await supabase
+      .storage
+      .from("media")
+      .list(path)
+
+    if (fileErr || !files) {
+      console.warn(`No media for ${personName}`)
+      continue
+    }
+
+    for (const file of files) {
+      const fullPath = `${path}/${file.name}`
+      const publicUrl = supabase.storage.from("media").getPublicUrl(fullPath).data.publicUrl
+      result.push({ url: publicUrl, uploader: personName })
+    }
+  }
+
+  return result
+}
+

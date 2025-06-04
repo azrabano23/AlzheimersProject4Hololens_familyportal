@@ -13,6 +13,7 @@ export type StoredUser = {
     user_id: string;
     username: string;
     activeRole?: string | null
+    name: string | null
 }
 
 export type FamilyMemeber = {
@@ -21,5 +22,11 @@ export type FamilyMemeber = {
     created_at: string,
     role: string,
     id: string,
-    
+
 }
+
+export type GroupMediaItem = {
+  url: string;
+  uploader: string; // personName
+};
+

@@ -17,9 +17,8 @@ const Navbar = () => {
             <Button asChild variant="ghost">
                 <Link to="/members">Members</Link>
             </Button>
-            <Button asChild variant="ghost">
                 <UploadPopup/>
-            </Button>
+
             <Button onClick={async () => {
                 await SignOut()
                 navigator("/")
@@ -35,6 +34,7 @@ const UploadPopup = () => {
   const [open, setOpen] = useState(false)
   const [file, setFile] = useState<File | null>(null)
   const userId = useUserStore((s) => s.userData?.user.id)
+  const name = useUserStore((state) => state.userData?.stored.name) ?? null
 
   async function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -43,7 +43,7 @@ const UploadPopup = () => {
       return
     }
 
-    const publicUrl = await uploadMedia(file, `user-uploads/${userId}`)
+    const publicUrl = await uploadMedia(file, `user-uploads/${userId}/${name}`)
     if (publicUrl) {
       console.log("uploaded file:", publicUrl)
       alert("upload successful")
