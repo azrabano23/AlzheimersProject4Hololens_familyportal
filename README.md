@@ -121,7 +121,9 @@ src/
 ## 👨‍💻 Contributors
 
 - Azra Bano – Full-stack development, Unity + Supabase integration  
-- [Add other team members here…]
+- Dominic Catena
+- Kashvi Shah
+- Aiden Annis
 
 ---
 
